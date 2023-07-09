@@ -1,35 +1,32 @@
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using study_dot_net.IRepositories;
 using study_dot_net.Models;
-using Swashbuckle.AspNetCore.Annotations;
 
 namespace study_dot_net.Controllers;
 
 [ApiController]
 [Route("[controller]")]
-public class EntidadeController : ControllerBase
+public class ProdutoController : ControllerBase
 {
-  private readonly ILogger<EntidadeController> _logger;
-  private readonly IEntidadeRepository _repository;
+  private readonly IProdutoRepository _repository;
 
-  public EntidadeController(ILogger<EntidadeController> logger, IEntidadeRepository repository)
+  public ProdutoController(IProdutoRepository repository)
   {
-    _logger = logger;
     _repository = repository;
   }
 
   [HttpDelete]
   public async Task<IActionResult> Delete(int id)
   {
-    Entidade? entidade = await _repository.Get(id);
+    Produto? produto = await _repository.Get(id);
 
     // Verificar se existe
-    if (entidade == null)
+    if (produto == null)
     {
       return NotFound();
     }
 
-    _repository.Remove(entidade);
+    _repository.Remove(produto);
 
     if (await _repository.SaveChangesAsync())
     {
@@ -46,22 +43,15 @@ public class EntidadeController : ControllerBase
   }
 
   [HttpGet("{id}")]
-  [SwaggerOperation(Description = "Vai obter uma entidade pelo Id e retornar seu objeto", Summary = "Obter a entidade pelo Id")]
   public async Task<IActionResult> Get(int id)
   {
     return Ok(await _repository.Get(id));
   }
 
-  [HttpGet("[action]")]
-  public async Task<IActionResult> GetByName(string nome)
-  {
-    return Ok(await _repository.Get(nome));
-  }
-
   [HttpPost]
-  public async Task<IActionResult> Post(Entidade entidade)
+  public async Task<IActionResult> Post(Produto produto)
   {
-    _repository.Add(entidade);
+    _repository.Add(produto);
 
     if (await _repository.SaveChangesAsync())
     {
@@ -72,7 +62,7 @@ public class EntidadeController : ControllerBase
   }
 
   [HttpPut]
-  public async Task<IActionResult> Put(int id, Entidade entidade)
+  public async Task<IActionResult> Put(int id, Produto produto)
   {
     // Verificar se existe
     if (!await _repository.Any(id))
@@ -80,8 +70,8 @@ public class EntidadeController : ControllerBase
       return NotFound();
     }
 
-    entidade.Id = id;
-    _repository.Update(entidade);
+    produto.Id = id;
+    _repository.Update(produto);
 
     if (await _repository.SaveChangesAsync())
     {
