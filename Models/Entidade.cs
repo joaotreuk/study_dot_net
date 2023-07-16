@@ -4,11 +4,10 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace study_dot_net.Models;
 
-public class Entidade
+public class Entidade : Padrao
 {
   [Column(TypeName = "date")]
   public DateTime? DataNascimento { get; set; }
-  public int Id { get; set; }
   [StringLength(100)]
   public required string Nome { get; set; }
 }

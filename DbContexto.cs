@@ -6,6 +6,7 @@ namespace study_dot_net
   public class DbContexto : DbContext
   {
     public DbSet<Entidade> Entidades { get; set; }
+    public DbSet<Log> Logs { get; set; }
     public DbSet<Produto> Produtos { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
