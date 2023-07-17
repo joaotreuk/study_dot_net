@@ -66,6 +66,10 @@ namespace study_dot_net.Controllers
 
       if (await Repository.SaveChangesAsync())
       {
+        // Log
+        EventId eventoId = new(DbLoggerProvider.LogOperationId, $"{typeof(T)} Insert");
+        _logger.LogInformation(eventoId, $"{entidade.Id} was inserted.");
+
         return Ok();
       }
 

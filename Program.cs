@@ -1,10 +1,11 @@
+using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using study_dot_net;
 using study_dot_net.IRepositories;
 using study_dot_net.Repositories;
 using study_dot_net.Services.DbLogger;
 
-var builder = WebApplication.CreateBuilder(args);
+WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 
@@ -15,18 +16,20 @@ builder.Services.AddSwaggerGen(c => {
   c.SwaggerDoc("v1", new OpenApiInfo { Title = "Super API", Version = "v1.0.1" });
 });
 
+// Contexto banco de dados
+builder.Services.AddDbContext<DbContexto>(options => {
+  options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
+});
+
 // Injeção de dependências
-builder.Services.AddDbContext<DbContexto>();
 builder.Services.AddScoped<IEntidadeRepository, EntidadeRepository>();
 builder.Services.AddScoped<IProdutoRepository, ProdutoRepository>();
-
-//builder.Configuration.GetSection("Logging").GetSection("Database").GetSection("Options").Bind(options)
 
 // Adicionar logger do SQL Server
 builder.Logging.AddDbLogger();
 
 // Build app
-var app = builder.Build();
+WebApplication app = builder.Build();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

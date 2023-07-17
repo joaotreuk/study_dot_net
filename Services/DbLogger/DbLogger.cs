@@ -6,6 +6,13 @@ namespace study_dot_net.Services.DbLogger;
 
 public class DbLogger : ILogger
 {
+  private readonly IServiceScopeFactory _serviceProvider;
+
+  public DbLogger(IServiceScopeFactory serviceProvider)
+  {
+    _serviceProvider = serviceProvider;
+  }
+
   public IDisposable? BeginScope<TState>(TState state) where TState : notnull
   {
     return null;
@@ -36,15 +43,16 @@ public class DbLogger : ILogger
       valores["Message"] = formatter(state, exception);
     }
 
-    using DbContexto contexto = new();
+    // Criar escopo
+    using IServiceScope scope = _serviceProvider.CreateScope();
+    DbContexto? _contexto = scope.ServiceProvider.GetService<DbContexto>();
 
     // Adicionar o log ao banco de dados
-    contexto.Logs.Add(new Log
+    _contexto.Logs.Add(new Log
     {
       Created = DateTime.Now,
       Values = JsonConvert.SerializeObject(valores)
     });
-
-    contexto.SaveChanges();
+    _contexto.SaveChanges();
   }
 }
